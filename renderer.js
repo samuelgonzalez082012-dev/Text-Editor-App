@@ -21,10 +21,10 @@
   function welcomeDoc() {
     return {
       id: uid(), title: 'Welcome', font: 'sans', updated: Date.now(),
-      html: '<h1>Welcome</h1><p>This is a bare bones place to write. Everything you type is saved in this browser as you go.</p>' +
+      html: '<h1>Welcome</h1><p>This is your local writing space. Your work is saved on this device as you go.</p>' +
         '<h2>Things to try</h2><ul><li>Select some text, then use the toolbar or press <b>Ctrl+B</b> / <b>⌘B</b>.</li>' +
         '<li>Change the paragraph style or the font from the toolbar.</li>' +
-        '<li>Start another document from the list on the left.</li></ul>' +
+        '<li>Create another document from the sidebar or Home.</li></ul>' +
         '<p>Delete this page whenever you like.</p>'
     };
   }
@@ -62,6 +62,7 @@
     return new Date(ts).toLocaleString(undefined, { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
   }
   function renderList() {
+    if (!listEl) return;
     listEl.textContent = '';
     state.docs.slice().sort(function (a, b) { return b.updated - a.updated; }).forEach(function (d) {
       var li = document.createElement('li');
