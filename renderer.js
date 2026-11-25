@@ -93,9 +93,11 @@
 
   function openDoc(id, keepSidebar) {
     flush();
+    showView('editor');
     state.current = id;
     var d = currentDoc();
     titleEl.value = d.title || '';
+    var sideCurrent = $('#sidebarcurrent'); if (sideCurrent) sideCurrent.textContent = d.title || 'Untitled document';
     editor.innerHTML = d.html || '<p><br></p>';
     if (!editor.firstElementChild) editor.innerHTML = '<p><br></p>';
     editor.setAttribute('data-font', d.font || 'sans');
@@ -360,4 +362,6 @@
   if (isNarrow()) app.classList.remove('open');
   load();
   openDoc(state.current, true);
+  renderWorkspace();
+  showView('home');
 })();
