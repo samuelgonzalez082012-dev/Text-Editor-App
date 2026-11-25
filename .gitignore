@@ -1,2 +1,8 @@
 node_modules
 out
+# Local development artifacts
+dist/
+release/
+coverage/
+*.log
+.DS_Store
