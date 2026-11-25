@@ -1,18 +1,94 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="UTF-8">
-    <!-- https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP -->
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'">
-    <title>Hello World!</title>
-  </head>
-  <body>
-    <h1>Hello World!</h1>
-    We are using Node.js <span id="node-version"></span>,
-    Chromium <span id="chrome-version"></span>,
-    and Electron <span id="electron-version"></span>.
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Bare Bones Docs</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Source+Serif+4:ital,wght@0,400;0,600;1,400&display=swap">
+<link rel="stylesheet" href="Main.css">
 
-    <!-- You can also require other files to run in this process -->
-    <script src="./renderer.js"></script>
-  </body>
-</html>
+<div class="app" id="app">
+  <aside class="side" id="side" aria-label="Documents">
+    <div class="side-head">
+      <div class="brand">Bare Bones Docs</div>
+      <button class="new" id="newdoc" type="button">+ New document</button>
+    </div>
+    <ul class="doclist" id="doclist"></ul>
+  </aside>
+  <div class="scrim" id="scrim"></div>
+
+  <div class="main">
+    <header class="bar"><div class="inner">
+      <button class="btn" id="sbtoggle" type="button" aria-label="Show or hide documents" title="Documents">
+        <svg viewBox="0 0 16 16"><path d="M2 4h12M2 8h12M2 12h12"/></svg>
+      </button>
+      <input class="title" id="title" type="text" placeholder="Untitled document" aria-label="Document title" autocomplete="off">
+      <button class="btn text" id="copytext" type="button" title="Copy the whole document as plain text">Copy<span class="long">&nbsp;text</span></button>
+      <button class="btn text" id="copyhtml" type="button" title="Copy the whole document as HTML">Copy<span class="long">&nbsp;HTML</span></button>
+    </div></header>
+
+    <div class="tools" id="tools"><div class="inner">
+      <div class="grp">
+        <button class="btn" data-cmd="undo" type="button" title="Undo" aria-label="Undo"><svg viewBox="0 0 16 16"><path d="M3 7h6.5a3.5 3.5 0 010 7H6"/><path d="M6 4L3 7l3 3"/></svg></button>
+        <button class="btn" data-cmd="redo" type="button" title="Redo" aria-label="Redo"><svg viewBox="0 0 16 16"><path d="M13 7H6.5a3.5 3.5 0 000 7H10"/><path d="M10 4l3 3-3 3"/></svg></button>
+      </div>
+      <span class="sep"></span>
+      <div class="grp">
+        <select class="sel" id="block" aria-label="Paragraph style">
+          <option value="p">Normal text</option>
+          <option value="h1">Heading 1</option>
+          <option value="h2">Heading 2</option>
+          <option value="h3">Heading 3</option>
+          <option value="blockquote">Quote</option>
+        </select>
+        <select class="sel" id="font" aria-label="Font">
+          <option value="sans">Sans</option>
+          <option value="serif">Serif</option>
+          <option value="mono">Mono</option>
+        </select>
+      </div>
+      <span class="sep"></span>
+      <div class="grp">
+        <button class="btn b" data-cmd="bold" type="button" title="Bold" aria-label="Bold">B</button>
+        <button class="btn i" data-cmd="italic" type="button" title="Italic" aria-label="Italic">I</button>
+        <button class="btn u" data-cmd="underline" type="button" title="Underline" aria-label="Underline">U</button>
+        <button class="btn s" data-cmd="strikeThrough" type="button" title="Strikethrough" aria-label="Strikethrough">S</button>
+        <label class="btn swatch" title="Text color"><span class="glyph" id="fgglyph">A</span><input type="color" id="fgcolor" value="#d93b3b" aria-label="Text color"></label>
+        <label class="btn swatch" title="Highlight"><span class="glyph" id="bgglyph" style="--sw:#ffe14d">H</span><input type="color" id="bgcolor" value="#ffe14d" aria-label="Highlight color"></label>
+      </div>
+      <span class="sep"></span>
+      <div class="grp">
+        <button class="btn" data-cmd="insertUnorderedList" type="button" title="Bulleted list" aria-label="Bulleted list"><svg viewBox="0 0 16 16"><circle class="f" cx="3" cy="4" r="1"/><circle class="f" cx="3" cy="8" r="1"/><circle class="f" cx="3" cy="12" r="1"/><path d="M6.5 4H14M6.5 8H14M6.5 12H14"/></svg></button>
+        <button class="btn" data-cmd="insertOrderedList" type="button" title="Numbered list" aria-label="Numbered list"><svg viewBox="0 0 16 16"><text class="f" x="1" y="5.6" font-size="5" font-family="Inter, sans-serif">1</text><text class="f" x="1" y="9.6" font-size="5" font-family="Inter, sans-serif">2</text><text class="f" x="1" y="13.6" font-size="5" font-family="Inter, sans-serif">3</text><path d="M6.5 4H14M6.5 8H14M6.5 12H14"/></svg></button>
+        <button class="btn" data-cmd="justifyLeft" type="button" title="Align left" aria-label="Align left"><svg viewBox="0 0 16 16"><path d="M2 3h12M2 6.5h8M2 10h12M2 13.5h8"/></svg></button>
+        <button class="btn" data-cmd="justifyCenter" type="button" title="Align center" aria-label="Align center"><svg viewBox="0 0 16 16"><path d="M2 3h12M4 6.5h8M2 10h12M4 13.5h8"/></svg></button>
+        <button class="btn" data-cmd="justifyRight" type="button" title="Align right" aria-label="Align right"><svg viewBox="0 0 16 16"><path d="M2 3h12M6 6.5h8M2 10h12M6 13.5h8"/></svg></button>
+      </div>
+      <span class="sep"></span>
+      <div class="grp">
+        <button class="btn" id="linkbtn" type="button" title="Insert link" aria-label="Insert link"><svg viewBox="0 0 16 16"><path d="M7 9a3 3 0 004.2 0l2-2a3 3 0 00-4.2-4.2l-.9.9"/><path d="M9 7a3 3 0 00-4.2 0l-2 2a3 3 0 004.2 4.2l.9-.9"/></svg></button>
+        <button class="btn" data-cmd="removeFormat" type="button" title="Clear formatting" aria-label="Clear formatting">T<span style="font-size:10px;vertical-align:sub">x</span></button>
+      </div>
+    </div></div>
+
+    <div class="linkbar" id="linkbar" hidden><div class="inner">
+      <input type="text" id="linkurl" placeholder="Paste or type a link, then press Enter" aria-label="Link address" autocomplete="off">
+      <button class="btn text" id="linkok" type="button">Apply</button>
+      <button class="btn text" id="linkrm" type="button">Remove link</button>
+      <button class="btn text" id="linkcancel" type="button">Cancel</button>
+    </div></div>
+
+    <div class="canvas" id="canvas">
+      <article class="page" id="editor" contenteditable="true" spellcheck="true" role="textbox" aria-multiline="true" aria-label="Document body" data-font="sans"></article>
+    </div>
+
+    <footer class="status"><div class="inner">
+      <span id="status">Saved</span>
+      <span id="stats">0 words</span>
+    </div></footer>
+  </div>
+</div>
+<div class="toast" id="toast" role="status" hidden></div>
+
+<script src="./renderer.js"></script>
+
+</body></html>
