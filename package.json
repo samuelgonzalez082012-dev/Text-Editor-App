@@ -1,15 +1,15 @@
 {
-  "name": "tested-wish-smoke-2zsjc",
-  "productName": "tested-wish-smoke-2zsjc",
-  "description": "My Electron application description",
-  "keywords": [],
-  "main": "./main.js",
-  "version": "1.0.0",
-  "author": "samue",
+  "name": "text-editor-app",
+  "productName": "Text Editor",
+  "description": "A professional, local-first document editor.",
+  "version": "0.2.0",
+  "private": true,
+  "author": "samuelgonzalez082012-dev",
+  "main": "main.js",
   "scripts": {
-    "start": "electron ."
+    "start": "electron .",
+    "check": "node --check main.js && node --check preload.js && node --check renderer.js"
   },
-  "dependencies": {},
   "devDependencies": {
     "electron": "43.4.0"
   }
