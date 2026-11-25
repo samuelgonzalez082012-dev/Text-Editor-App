@@ -1,18 +1,14 @@
-/**
- * The preload script runs before `index.html` is loaded
- * in the renderer. It has access to web APIs as well as
- * Electron's renderer process modules and some polyfilled
- * Node.js functions.
- *
- * https://www.electronjs.org/docs/latest/tutorial/sandbox
- */
-window.addEventListener('DOMContentLoaded', () => {
-  const replaceText = (selector, text) => {
-    const element = document.getElementById(selector)
-    if (element) element.innerText = text
-  }
+const { contextBridge } = require('electron')
 
-  for (const type of ['chrome', 'node', 'electron']) {
-    replaceText(`${type}-version`, process.versions[type])
-  }
-})
+contextBridge.exposeInMainWorld('desktopApp', Object.freeze({
+  name: 'Text Editor',
+  version: process.env.npm_package_version || appVersion(),
+  platform: process.platform,
+  isDesktop: true
+}))
+
+function appVersion () {
+  // Keep the preload bridge intentionally small; privileged filesystem APIs
+  // will be introduced behind explicit, validated IPC contracts in Phase 3.
+  return '0.2.0'
+}
