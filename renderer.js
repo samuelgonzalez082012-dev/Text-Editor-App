@@ -43,7 +43,7 @@
     catch (e) { storageOK = false; }
   }
   function setStatus(saving) {
-    statusEl.textContent = saving ? 'Saving…' : (storageOK ? 'Saved in this browser' : 'Not saved: browser storage is unavailable');
+    statusEl.textContent = saving ? 'Saving…' : (storageOK ? 'Saved on this device' : 'Not saved: browser storage is unavailable');
   }
   function flush() {
     clearTimeout(saveTimer); saveTimer = null;
