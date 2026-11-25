@@ -1,94 +1,118 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
-<title>Bare Bones Docs</title>
-<meta name="claude:viewport-fit-sides" content="cover">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Source+Serif+4:ital,wght@0,400;0,600;1,400&display=swap">
-<link rel="stylesheet" href="Main.css">
-
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <meta name="description" content="A focused, local-first document editor.">
+  <title>Text Editor</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;650;700&family=JetBrains+Mono:wght@400;500&family=Source+Serif+4:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="Main.css">
+</head>
+<body>
 <div class="app" id="app">
-  <aside class="side" id="side" aria-label="Documents">
+  <aside class="side" id="side" aria-label="Main navigation">
     <div class="side-head">
-      <div class="brand">Bare Bones Docs</div>
-      <button class="new" id="newdoc" type="button">+ New document</button>
+      <a class="brand" href="#" id="brandhome" aria-label="Text Editor home">
+        <span class="brand-mark" aria-hidden="true">T</span>
+        <span><strong>Text Editor</strong><small>DOCUMENT WORKSPACE</small></span>
+      </a>
+      <button class="new" id="newdoc" type="button"><span aria-hidden="true">＋</span> New document</button>
     </div>
-    <ul class="doclist" id="doclist"></ul>
+    <nav class="primary-nav" aria-label="Workspace">
+      <button class="nav-item active" type="button" data-view="home"><span class="nav-icon">⌂</span> Home</button>
+      <button class="nav-item" type="button" data-view="documents"><span class="nav-icon">▤</span> Documents</button>
+    </nav>
+    <div class="side-section-label">YOUR WORKSPACE</div>
+    <div class="sidebar-current">
+      <div class="sidebar-current-label">OPEN DOCUMENT</div>
+      <div class="sidebar-current-title" id="sidebarcurrent">Welcome</div>
+    </div>
+    <div class="side-spacer"></div>
+    <div class="side-bottom">
+      <button class="nav-item" id="settingsbtn" type="button"><span class="nav-icon">⚙</span> Settings</button>
+      <div class="profile-chip"><span class="profile-avatar">T</span><span><strong>Local workspace</strong><small>Saved on this device</small></span><span class="local-dot" title="Local"></span></div>
+    </div>
   </aside>
   <div class="scrim" id="scrim"></div>
 
-  <div class="main">
+  <main class="main">
     <header class="bar"><div class="inner">
-      <button class="btn" id="sbtoggle" type="button" aria-label="Show or hide documents" title="Documents">
-        <svg viewBox="0 0 16 16"><path d="M2 4h12M2 8h12M2 12h12"/></svg>
-      </button>
-      <input class="title" id="title" type="text" placeholder="Untitled document" aria-label="Document title" autocomplete="off">
-      <button class="btn text" id="copytext" type="button" title="Copy the whole document as plain text">Copy<span class="long">&nbsp;text</span></button>
-      <button class="btn text" id="copyhtml" type="button" title="Copy the whole document as HTML">Copy<span class="long">&nbsp;HTML</span></button>
+      <button class="btn" id="sbtoggle" type="button" aria-label="Show or hide navigation" title="Navigation">☰</button>
+      <div class="breadcrumb"><span>Workspace</span><span class="crumb-slash">/</span><strong id="viewlabel">Home</strong></div>
+      <div class="bar-spacer"></div>
+      <span class="save-indicator"><span class="save-dot"></span><span id="status">Ready</span></span>
+      <button class="avatar-button" id="topsettings" type="button" aria-label="Open settings">⚙</button>
     </div></header>
 
-    <div class="tools" id="tools"><div class="inner">
-      <div class="grp">
-        <button class="btn" data-cmd="undo" type="button" title="Undo" aria-label="Undo"><svg viewBox="0 0 16 16"><path d="M3 7h6.5a3.5 3.5 0 010 7H6"/><path d="M6 4L3 7l3 3"/></svg></button>
-        <button class="btn" data-cmd="redo" type="button" title="Redo" aria-label="Redo"><svg viewBox="0 0 16 16"><path d="M13 7H6.5a3.5 3.5 0 000 7H10"/><path d="M10 4l3 3-3 3"/></svg></button>
+    <section class="home-view" id="homeview">
+      <div class="home-heading">
+        <div><div class="eyebrow">YOUR WORKSPACE</div><h1>Good to have you here.</h1><p>Pick up where you left off, or start something new.</p></div>
+        <button class="primary-action" id="homecreate" type="button">＋ Create document</button>
       </div>
-      <span class="sep"></span>
-      <div class="grp">
-        <select class="sel" id="block" aria-label="Paragraph style">
-          <option value="p">Normal text</option>
-          <option value="h1">Heading 1</option>
-          <option value="h2">Heading 2</option>
-          <option value="h3">Heading 3</option>
-          <option value="blockquote">Quote</option>
-        </select>
-        <select class="sel" id="font" aria-label="Font">
-          <option value="sans">Sans</option>
-          <option value="serif">Serif</option>
-          <option value="mono">Mono</option>
-        </select>
+      <div class="home-stats">
+        <div class="stat-card"><span class="stat-label">DOCUMENTS</span><strong id="doccount">0</strong><span class="stat-foot">In this workspace</span></div>
+        <div class="stat-card"><span class="stat-label">STORAGE</span><strong>On device</strong><span class="stat-foot">Your work stays local</span></div>
       </div>
-      <span class="sep"></span>
-      <div class="grp">
-        <button class="btn b" data-cmd="bold" type="button" title="Bold" aria-label="Bold">B</button>
-        <button class="btn i" data-cmd="italic" type="button" title="Italic" aria-label="Italic">I</button>
-        <button class="btn u" data-cmd="underline" type="button" title="Underline" aria-label="Underline">U</button>
-        <button class="btn s" data-cmd="strikeThrough" type="button" title="Strikethrough" aria-label="Strikethrough">S</button>
-        <label class="btn swatch" title="Text color"><span class="glyph" id="fgglyph">A</span><input type="color" id="fgcolor" value="#d93b3b" aria-label="Text color"></label>
-        <label class="btn swatch" title="Highlight"><span class="glyph" id="bgglyph" style="--sw:#ffe14d">H</span><input type="color" id="bgcolor" value="#ffe14d" aria-label="Highlight color"></label>
-      </div>
-      <span class="sep"></span>
-      <div class="grp">
-        <button class="btn" data-cmd="insertUnorderedList" type="button" title="Bulleted list" aria-label="Bulleted list"><svg viewBox="0 0 16 16"><circle class="f" cx="3" cy="4" r="1"/><circle class="f" cx="3" cy="8" r="1"/><circle class="f" cx="3" cy="12" r="1"/><path d="M6.5 4H14M6.5 8H14M6.5 12H14"/></svg></button>
-        <button class="btn" data-cmd="insertOrderedList" type="button" title="Numbered list" aria-label="Numbered list"><svg viewBox="0 0 16 16"><text class="f" x="1" y="5.6" font-size="5" font-family="Inter, sans-serif">1</text><text class="f" x="1" y="9.6" font-size="5" font-family="Inter, sans-serif">2</text><text class="f" x="1" y="13.6" font-size="5" font-family="Inter, sans-serif">3</text><path d="M6.5 4H14M6.5 8H14M6.5 12H14"/></svg></button>
-        <button class="btn" data-cmd="justifyLeft" type="button" title="Align left" aria-label="Align left"><svg viewBox="0 0 16 16"><path d="M2 3h12M2 6.5h8M2 10h12M2 13.5h8"/></svg></button>
-        <button class="btn" data-cmd="justifyCenter" type="button" title="Align center" aria-label="Align center"><svg viewBox="0 0 16 16"><path d="M2 3h12M4 6.5h8M2 10h12M4 13.5h8"/></svg></button>
-        <button class="btn" data-cmd="justifyRight" type="button" title="Align right" aria-label="Align right"><svg viewBox="0 0 16 16"><path d="M2 3h12M6 6.5h8M2 10h12M6 13.5h8"/></svg></button>
-      </div>
-      <span class="sep"></span>
-      <div class="grp">
-        <button class="btn" id="linkbtn" type="button" title="Insert link" aria-label="Insert link"><svg viewBox="0 0 16 16"><path d="M7 9a3 3 0 004.2 0l2-2a3 3 0 00-4.2-4.2l-.9.9"/><path d="M9 7a3 3 0 00-4.2 0l-2 2a3 3 0 004.2 4.2l.9-.9"/></svg></button>
-        <button class="btn" data-cmd="removeFormat" type="button" title="Clear formatting" aria-label="Clear formatting">T<span style="font-size:10px;vertical-align:sub">x</span></button>
-      </div>
-    </div></div>
+      <div class="section-heading"><div><h2>Recent documents</h2><p>Continue working on a recent file.</p></div><button class="quiet-action" id="viewall" type="button">View all documents →</button></div>
+      <div class="recent-grid" id="recentgrid"></div>
+    </section>
 
-    <div class="linkbar" id="linkbar" hidden><div class="inner">
-      <input type="text" id="linkurl" placeholder="Paste or type a link, then press Enter" aria-label="Link address" autocomplete="off">
-      <button class="btn text" id="linkok" type="button">Apply</button>
-      <button class="btn text" id="linkrm" type="button">Remove link</button>
-      <button class="btn text" id="linkcancel" type="button">Cancel</button>
-    </div></div>
+    <section class="documents-view" id="documentsview" hidden>
+      <div class="page-heading"><div class="eyebrow">LIBRARY</div><h1>Documents</h1><p>Your documents, in one place.</p></div>
+      <div class="documents-toolbar"><span id="librarycount">0 documents</span><button class="primary-action" id="librarycreate" type="button">＋ New document</button></div>
+      <div class="library-list" id="librarylist"></div>
+    </section>
 
-    <div class="canvas" id="canvas">
-      <article class="page" id="editor" contenteditable="true" spellcheck="true" role="textbox" aria-multiline="true" aria-label="Document body" data-font="sans"></article>
+    <section class="editor-view" id="editorview" hidden>
+      <div class="editor-titlebar"><input class="title" id="title" type="text" placeholder="Untitled document" aria-label="Document title" autocomplete="off"><span class="editor-save-label">LOCAL DOCUMENT</span></div>
+      <div class="tools" id="tools"><div class="inner">
+        <div class="grp">
+          <button class="btn" data-cmd="undo" type="button" title="Undo" aria-label="Undo">↶</button>
+          <button class="btn" data-cmd="redo" type="button" title="Redo" aria-label="Redo">↷</button>
+        </div><span class="sep"></span>
+        <div class="grp">
+          <select class="sel" id="block" aria-label="Paragraph style"><option value="p">Normal text</option><option value="h1">Heading 1</option><option value="h2">Heading 2</option><option value="h3">Heading 3</option><option value="blockquote">Quote</option></select>
+          <select class="sel" id="font" aria-label="Font"><option value="sans">Sans</option><option value="serif">Serif</option><option value="mono">Mono</option></select>
+        </div><span class="sep"></span>
+        <div class="grp">
+          <button class="btn b" data-cmd="bold" type="button" title="Bold" aria-label="Bold">B</button><button class="btn i" data-cmd="italic" type="button" title="Italic" aria-label="Italic">I</button><button class="btn u" data-cmd="underline" type="button" title="Underline" aria-label="Underline">U</button><button class="btn s" data-cmd="strikeThrough" type="button" title="Strikethrough" aria-label="Strikethrough">S</button>
+          <label class="btn swatch" title="Text color"><span class="glyph" id="fgglyph">A</span><input type="color" id="fgcolor" value="#315bd6" aria-label="Text color"></label>
+          <label class="btn swatch" title="Highlight"><span class="glyph" id="bgglyph" style="--sw:#ffe14d">H</span><input type="color" id="bgcolor" value="#ffe14d" aria-label="Highlight color"></label>
+        </div><span class="sep"></span>
+        <div class="grp">
+          <button class="btn" data-cmd="insertUnorderedList" type="button" title="Bulleted list" aria-label="Bulleted list">• List</button><button class="btn" data-cmd="insertOrderedList" type="button" title="Numbered list" aria-label="Numbered list">1. List</button>
+          <button class="btn" data-cmd="justifyLeft" type="button" title="Align left" aria-label="Align left">☰</button><button class="btn" data-cmd="justifyCenter" type="button" title="Align center" aria-label="Align center">≡</button><button class="btn" data-cmd="justifyRight" type="button" title="Align right" aria-label="Align right">☷</button>
+        </div><span class="sep"></span>
+        <div class="grp"><button class="btn" id="linkbtn" type="button" title="Insert link" aria-label="Insert link">↗</button><button class="btn" data-cmd="removeFormat" type="button" title="Clear formatting" aria-label="Clear formatting">Tx</button></div>
+        <div class="toolbar-spacer"></div><button class="btn text" id="copytext" type="button">Copy text</button><button class="btn text" id="copyhtml" type="button">Copy HTML</button>
+      </div></div>
+      <div class="linkbar" id="linkbar" hidden><div class="inner"><input type="text" id="linkurl" placeholder="Paste or type a link, then press Enter" aria-label="Link address" autocomplete="off"><button class="btn text" id="linkok" type="button">Apply</button><button class="btn text" id="linkrm" type="button">Remove link</button><button class="btn text" id="linkcancel" type="button">Cancel</button></div></div>
+      <div class="canvas" id="canvas"><article class="page" id="editor" contenteditable="true" spellcheck="true" role="textbox" aria-multiline="true" aria-label="Document body" data-font="sans"></article></div>
+      <footer class="status"><div class="inner"><span id="stats">0 words</span><span>All changes are stored locally</span></div></footer>
+    </section>
+  </main>
+</div>
+
+<div class="settings-backdrop" id="settingsbackdrop" hidden>
+  <section class="settings-panel" role="dialog" aria-modal="true" aria-labelledby="settingstitle">
+    <div class="settings-head"><div><div class="eyebrow">PREFERENCES</div><h2 id="settingstitle">Settings</h2></div><button class="btn close-settings" id="closesettings" type="button" aria-label="Close settings">×</button></div>
+    <div class="settings-content">
+      <div class="settings-group"><h3>Appearance</h3><p>Choose how Text Editor looks on this device.</p>
+        <label class="setting-row"><span><strong>Theme</strong><small>Use a light or dark workspace.</small></span><select id="theme-setting" class="setting-select"><option value="system">System</option><option value="light">Light</option><option value="dark">Dark</option></select></label>
+        <label class="setting-row"><span><strong>Accent color</strong><small>Choose your interface highlight.</small></span><input type="color" id="accent-setting" value="#315bd6"></label>
+      </div>
+      <div class="settings-group"><h3>Editor</h3><p>Set your default writing preferences.</p>
+        <label class="setting-row"><span><strong>Default font</strong><small>Used for newly created documents.</small></span><select id="default-font-setting" class="setting-select"><option value="sans">Sans</option><option value="serif">Serif</option><option value="mono">Mono</option></select></label>
+      </div>
+      <div class="settings-group"><h3>About</h3><p>Text Editor · Version <span id="appversion">0.2.0</span></p><p class="settings-note">A local-first document workspace. Your documents remain on this device in this starter release.</p></div>
     </div>
-
-    <footer class="status"><div class="inner">
-      <span id="status">Saved</span>
-      <span id="stats">0 words</span>
-    </div></footer>
-  </div>
+    <div class="settings-footer"><button class="quiet-action" id="resetsettings" type="button">Reset preferences</button><button class="primary-action" id="done-settings" type="button">Done</button></div>
+  </section>
 </div>
 <div class="toast" id="toast" role="status" hidden></div>
-
 <script src="./renderer.js"></script>
-
-</body></html>
+</body>
+</html>
