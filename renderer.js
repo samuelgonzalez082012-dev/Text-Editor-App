@@ -28,7 +28,7 @@
         '<p>Delete this page whenever you like.</p>'
     };
   }
-  function blankDoc() { return { id: uid(), title: '', font: 'sans', html: '<p><br></p>', updated: Date.now() }; }
+  function blankDoc() { return { id: uid(), title: '', font: (window.workspaceSettings && window.workspaceSettings.defaultFont) || 'sans', html: '<p><br></p>', updated: Date.now() }; }
 
   function load() {
     try {
@@ -267,6 +267,93 @@
   }
   $('#copytext').addEventListener('click', function () { copyOut(editor.innerText, 'Text'); });
   $('#copyhtml').addEventListener('click', function () { copyOut(editor.innerHTML, 'HTML'); });
+
+
+  /* Workspace navigation, dashboard and persistent preferences (Phase 2). */
+  var SETTINGS_KEY = 'texteditor.settings.v1';
+  var defaults = { theme: 'system', accent: '#315bd6', defaultFont: 'sans' };
+  var workspaceSettings = Object.assign({}, defaults);
+  try { workspaceSettings = Object.assign({}, defaults, JSON.parse(localStorage.getItem(SETTINGS_KEY) || '{}')); } catch (e) {}
+  window.workspaceSettings = workspaceSettings;
+
+  function applySettings() {
+    if (workspaceSettings.theme === 'system') document.documentElement.removeAttribute('data-theme');
+    else document.documentElement.setAttribute('data-theme', workspaceSettings.theme);
+    document.documentElement.style.setProperty('--accent', workspaceSettings.accent);
+    document.documentElement.style.setProperty('--accent-soft', workspaceSettings.theme === 'dark' ? 'color-mix(in srgb, ' + workspaceSettings.accent + ' 22%, #20293a)' : 'color-mix(in srgb, ' + workspaceSettings.accent + ' 11%, white)');
+    $('#theme-setting').value = workspaceSettings.theme;
+    $('#accent-setting').value = workspaceSettings.accent;
+    $('#default-font-setting').value = workspaceSettings.defaultFont;
+    try { localStorage.setItem(SETTINGS_KEY, JSON.stringify(workspaceSettings)); } catch (e) {}
+  }
+
+  function showView(view) {
+    $('#homeview').hidden = view !== 'home';
+    $('#documentsview').hidden = view !== 'documents';
+    $('#editorview').hidden = view !== 'editor';
+    $('#viewlabel').textContent = view === 'home' ? 'Home' : view === 'documents' ? 'Documents' : 'Editor';
+    document.querySelectorAll('[data-view]').forEach(function (b) { b.classList.toggle('active', b.dataset.view === view); });
+    if (view === 'home' || view === 'documents') renderWorkspace();
+    if (isNarrow()) app.classList.remove('open');
+  }
+
+  function makeDocumentCard(d, compact) {
+    var card = document.createElement('button');
+    card.type = 'button'; card.className = compact ? 'recent-card' : 'library-row';
+    var icon = document.createElement('span'); icon.className = compact ? 'recent-card-icon' : 'library-icon'; icon.textContent = '▤';
+    var copy = document.createElement('span');
+    if (!compact) copy.className = 'library-row-copy';
+    var name = document.createElement(compact ? 'strong' : 'strong'); name.textContent = d.title || 'Untitled document';
+    var date = document.createElement('small'); date.textContent = 'Edited ' + fmtDate(d.updated);
+    copy.appendChild(name); copy.appendChild(date);
+    card.appendChild(icon); card.appendChild(copy);
+    card.addEventListener('click', function () { openDoc(d.id); });
+    return card;
+  }
+
+  function renderWorkspace() {
+    var ordered = state.docs.slice().sort(function (a, b) { return b.updated - a.updated; });
+    $('#doccount').textContent = ordered.length.toLocaleString();
+    $('#librarycount').textContent = ordered.length + (ordered.length === 1 ? ' document' : ' documents');
+    var recent = $('#recentgrid'); recent.textContent = '';
+    if (!ordered.length) {
+      var empty = document.createElement('div'); empty.className = 'empty-state'; empty.textContent = 'No documents yet. Create your first document to get started.'; recent.appendChild(empty);
+    } else ordered.slice(0, 6).forEach(function (d) { recent.appendChild(makeDocumentCard(d, true)); });
+    var library = $('#librarylist'); library.textContent = '';
+    if (!ordered.length) {
+      var emptyLibrary = document.createElement('div'); emptyLibrary.className = 'empty-state'; emptyLibrary.textContent = 'Your document library is empty.'; library.appendChild(emptyLibrary);
+    } else ordered.forEach(function (d) { library.appendChild(makeDocumentCard(d, false)); });
+  }
+
+  function openSettings() {
+    $('#settingsbackdrop').hidden = false;
+    $('#theme-setting').focus();
+  }
+  function closeSettings() { $('#settingsbackdrop').hidden = true; }
+  function saveSetting(key, value) {
+    workspaceSettings[key] = value;
+    applySettings();
+  }
+
+  document.querySelectorAll('[data-view]').forEach(function (button) {
+    button.addEventListener('click', function () { showView(button.dataset.view); });
+  });
+  $('#brandhome').addEventListener('click', function (e) { e.preventDefault(); showView('home'); });
+  $('#homecreate').addEventListener('click', newDoc);
+  $('#librarycreate').addEventListener('click', newDoc);
+  $('#viewall').addEventListener('click', function () { showView('documents'); });
+  $('#settingsbtn').addEventListener('click', openSettings);
+  $('#topsettings').addEventListener('click', openSettings);
+  $('#closesettings').addEventListener('click', closeSettings);
+  $('#done-settings').addEventListener('click', closeSettings);
+  $('#settingsbackdrop').addEventListener('click', function (e) { if (e.target === $('#settingsbackdrop')) closeSettings(); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeSettings(); });
+  $('#theme-setting').addEventListener('change', function (e) { saveSetting('theme', e.target.value); });
+  $('#accent-setting').addEventListener('input', function (e) { saveSetting('accent', e.target.value); });
+  $('#default-font-setting').addEventListener('change', function (e) { saveSetting('defaultFont', e.target.value); });
+  $('#resetsettings').addEventListener('click', function () { workspaceSettings = Object.assign({}, defaults); window.workspaceSettings = workspaceSettings; applySettings(); });
+  $('#appversion').textContent = window.desktopApp && window.desktopApp.version ? window.desktopApp.version : '0.2.0';
+  applySettings();
 
   /* Start */
   try { document.execCommand('defaultParagraphSeparator', false, 'p'); } catch (e) {}
